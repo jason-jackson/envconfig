@@ -49,14 +49,16 @@ func TestMain(m *testing.M) {
 }
 
 func compareUsage(want, got string, t *testing.T) {
-	got = strings.Replace(got, " ", ".", -1)
+	got = strings.ReplaceAll(got, " ", ".")
 	if want != got {
-		shortest := len(want)
-		if len(got) < shortest {
-			shortest = len(got)
-		}
-		if len(want) != len(got) {
+		lw, lg := len(want), len(got)
+		if lw != lg {
 			t.Errorf("expected result length of %d, found %d", len(want), len(got))
+		}
+
+		shortest := lw
+		if lg < lw {
+			shortest = lg
 		}
 		for i := 0; i < shortest; i++ {
 			if want[i] != got[i] {
@@ -137,7 +139,7 @@ func TestUsageUnknownKeyFormat(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected 'unknown key' error, but got no error")
 	}
-	if strings.Index(err.Error(), unknownError) == -1 {
+	if !strings.Contains(err.Error(), unknownError) {
 		t.Errorf("expected '%s', but got '%s'", unknownError, err.Error())
 	}
 }
